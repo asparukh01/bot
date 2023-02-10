@@ -1,69 +1,21 @@
-from telegram.ext._updater import Updater
-from telegram._update import Update
-from telegram.ext._callbackcontext import CallbackContext
-from telegram.ext._commandhandler import CommandHandler
-from telegram.ext._messagehandler import MessageHandler
-from telegram.ext.filters import BaseFilter
+import requests
+import pprint
+from config import open_wether_token
+
+def get_wether(city, open_wether_token):
+    try:
+        r = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={open_wether_token}')
+        data = r.json()
+        pprint(data)
+    except Exception as ex:
+        print(ex)
+        print('Check city name')
 
 
-updater = Updater("5910502237:AAErMPcSxLlahNRgvDMKOQ05Td9UL1n1eb8", update_queue=True)
+def main():
+    city = input('Enter city: ')
+    get_wether(city, open_wether_token)
 
-def start(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "Hi user")
-    
 
-def help(update: Update, context: CallbackContext):
-    update.message.reply_text("""Available Commands :-
-    /youtube - To get the youtube URL
-    /linkedin - To get the LinkedIn profile URL
-    /gmail - To get gmail URL
-    /geeks - To get the GeeksforGeeks URL""")
-  
-  
-def gmail_url(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "Your gmail link here (I am not\
-        giving mine one for security reasons)")
-  
-  
-def youtube_url(update: Update, context: CallbackContext):
-    update.message.reply_text("Youtube Link =>\
-    https://www.youtube.com/")
-  
-  
-def linkedIn_url(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "LinkedIn URL => \
-        https://www.linkedin.com/in/dwaipayan-bandyopadhyay-007a/")
-  
-  
-def geeks_url(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "GeeksforGeeks URL => https://www.geeksforgeeks.org/")
-  
-  
-def unknown(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "Sorry '%s' is not a valid command" % update.message.text)
-  
-  
-def unknown_text(update: Update, context: CallbackContext):
-    update.message.reply_text(
-        "Sorry I can't recognize you , you said '%s'" % update.message.text)
-  
-  
-updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('youtube', youtube_url))
-updater.dispatcher.add_handler(CommandHandler('help', help))
-updater.dispatcher.add_handler(CommandHandler('linkedin', linkedIn_url))
-updater.dispatcher.add_handler(CommandHandler('gmail', gmail_url))
-updater.dispatcher.add_handler(CommandHandler('geeks', geeks_url))
-updater.dispatcher.add_handler(MessageHandler(BaseFilter.text, unknown))
-updater.dispatcher.add_handler(MessageHandler(
-    BaseFilter.command, unknown))  # Filters out unknown commands
-  
-# Filters out unknown messages.
-updater.dispatcher.add_handler(MessageHandler(BaseFilter.text, unknown_text))
-  
-updater.start_polling()
+if __name__ == '__main__':
+    main()
